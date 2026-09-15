@@ -21,12 +21,15 @@ import { BackupModule } from './backup-module-registry';
 import { BackupBatchListQueryDto } from './dto/backup-batch-list-query.dto';
 import { BackupRunListQueryDto } from './dto/backup-run-list-query.dto';
 import { ArchiveBackfillPreviewDto, ArchiveBackfillExecuteDto } from './dto/archive-backfill.dto';
+import { CronSecretGuard } from './cron-secret.guard';
+import { ResponseInterceptor } from '../common/response.interceptor';
+import { UseInterceptors } from '@nestjs/common';
 
 @Controller('api/v1/backups')
+@UseInterceptors(ResponseInterceptor)
 @ApiTags('备份管理')
 export class BackupController {
-  private scheduledBackupInFlight: ReturnType<BackupService['createScheduledBackupBatch']> | null =
-    null;
+  private scheduledBackupInFlight: Promise<any> | null = null;
 
   constructor(private readonly backupService: BackupService) {}
 
@@ -305,15 +308,9 @@ export class BackupController {
   }
 
   @Post('auto-backup')
+  @UseGuards(CronSecretGuard)
   @ApiOperation({ summary: 'Vercel Cron 自动定时备份接口' })
-  async autoBackup(@Req() req: any) {
-    const authHeader = req.headers['authorization'];
-    const expectedToken = `Bearer ${process.env.CRON_SECRET}`;
-
-    if (!process.env.CRON_SECRET || authHeader !== expectedToken) {
-      throw new ForbiddenException('未授权的定时备份请求');
-    }
-
+  async autoBackup() {
     if (!this.scheduledBackupInFlight) {
       this.scheduledBackupInFlight = this.backupService
         .createScheduledBackupBatch('vercel-cron-system')

@@ -412,8 +412,8 @@ describe('BackupController scheduled backup single-flight', () => {
     };
 
     try {
-      const first = controller.autoBackup(createRequest());
-      const second = controller.autoBackup(createRequest());
+      const first = controller.autoBackup();
+      const second = controller.autoBackup();
       expect(backupService.createScheduledBackupBatch).toHaveBeenCalledTimes(1);
 
       resolveBackup({
@@ -434,17 +434,5 @@ describe('BackupController scheduled backup single-flight', () => {
       if (previousSecret === undefined) delete process.env.CRON_SECRET;
       else process.env.CRON_SECRET = previousSecret;
     }
-  });
-
-  it('未配置或提供错误 CRON_SECRET 时抛出 403 ForbiddenException', async () => {
-    const backupService = {
-      createScheduledBackupBatch: jest.fn(),
-    } as any;
-    const controller = new BackupController(backupService);
-    process.env.CRON_SECRET = 'secret_123';
-
-    await expect(
-      controller.autoBackup({ headers: { authorization: 'Bearer wrong' } }),
-    ).rejects.toThrow('未授权的定时备份请求');
   });
 });

@@ -87,4 +87,32 @@ describe('UploadService', () => {
     expect(result?.formalUrl).toContain('uploads/teams/team-1/logo');
     expect(service.copyObject).toHaveBeenCalled();
   });
+
+  describe('extractKeyFromUrl and URL validation', () => {
+    const originalEnv = process.env;
+
+    beforeEach(() => {
+      process.env = { ...originalEnv, R2_PUBLIC_URL: 'https://cdn.example.com/' };
+    });
+
+    afterAll(() => {
+      process.env = originalEnv;
+    });
+
+    it('should extract key from valid URL', () => {
+      expect(service.extractKeyFromUrl('https://cdn.example.com/temp/x')).toBe('temp/x');
+    });
+
+    it('should throw on javascript protocol', () => {
+      expect(() => service.extractKeyFromUrl('javascript:alert(1)')).toThrow();
+    });
+
+    it('should throw on forged host', () => {
+      expect(() => service.extractKeyFromUrl('https://evil.com/temp/x')).toThrow();
+    });
+
+    it('promoteTempAsset should not write invalid URL to DB', async () => {
+      await expect(service.promoteTempAsset('javascript:alert(1)', 'test', 'userA')).rejects.toThrow();
+    });
+  });
 });
