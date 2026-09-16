@@ -9,7 +9,11 @@ const logger = new Logger('EnvConfig');
  * 拒绝：undefined、空串、空白、非数字、零、负数、小数、科学计数法、
  *       带正负号、前导零、超安全整数范围。
  */
-export function parsePositiveInt(raw: string | undefined, fallback: number, configKey?: string): number {
+export function parsePositiveInt(
+  raw: string | undefined,
+  fallback: number,
+  configKey?: string,
+): number {
   if (!raw || raw.trim() === '') return fallback;
   // 仅允许纯十进制数字（1-9 开头，后续 0-9），拒绝小数、科学计数法、正负号、前导零
   if (!/^[1-9]\d*$/.test(raw.trim())) {

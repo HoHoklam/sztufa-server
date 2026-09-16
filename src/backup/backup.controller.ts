@@ -9,7 +9,6 @@ import {
   Query,
   Param,
   UseGuards,
-  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { BackupService } from './backup.service';

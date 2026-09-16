@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { UploadService } from './upload.service';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -111,8 +112,17 @@ describe('UploadService', () => {
       expect(() => service.extractKeyFromUrl('https://evil.com/temp/x')).toThrow();
     });
 
+    it.each(['//evil.com/temp/x', '\\\\evil.com\\temp\\x'])(
+      'should reject protocol-relative URL: %s',
+      (url) => {
+        expect(() => service.extractKeyFromUrl(url)).toThrow(UnprocessableEntityException);
+      },
+    );
+
     it('promoteTempAsset should not write invalid URL to DB', async () => {
-      await expect(service.promoteTempAsset('javascript:alert(1)', 'test', 'userA')).rejects.toThrow();
+      await expect(
+        service.promoteTempAsset('javascript:alert(1)', 'test', 'userA'),
+      ).rejects.toThrow();
     });
   });
 });

@@ -22,10 +22,12 @@ describe('ResponseInterceptor', () => {
   });
 
   it('应该对已经是包裹格式的数据进行透传', (done) => {
-    interceptor.intercept({} as any, createMockCallHandler({ success: true, data: { id: '1' } })).subscribe((res) => {
-      expect(res).toEqual({ success: true, data: { id: '1' } });
-      done();
-    });
+    interceptor
+      .intercept({} as any, createMockCallHandler({ success: true, data: { id: '1' } }))
+      .subscribe((res) => {
+        expect(res).toEqual({ success: true, data: { id: '1' } });
+        done();
+      });
   });
 
   it('应该处理 null', (done) => {

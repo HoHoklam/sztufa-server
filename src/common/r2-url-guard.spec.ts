@@ -29,11 +29,15 @@ describe('assertPublicAssetUrl', () => {
   });
 
   it('拒绝 data 协议', () => {
-    expect(() => assertPublicAssetUrl('data:text/html,<script>alert(1)</script>')).toThrow(UnprocessableEntityException);
+    expect(() => assertPublicAssetUrl('data:text/html,<script>alert(1)</script>')).toThrow(
+      UnprocessableEntityException,
+    );
   });
 
   it('拒绝 blob 协议', () => {
-    expect(() => assertPublicAssetUrl('blob:https://cdn.example.com/xxx')).toThrow(UnprocessableEntityException);
+    expect(() => assertPublicAssetUrl('blob:https://cdn.example.com/xxx')).toThrow(
+      UnprocessableEntityException,
+    );
   });
 
   it('拒绝空串', () => {
@@ -41,15 +45,21 @@ describe('assertPublicAssetUrl', () => {
   });
 
   it('拒绝非白名单 host', () => {
-    expect(() => assertPublicAssetUrl('https://evil.com/temp/x.webp')).toThrow(UnprocessableEntityException);
+    expect(() => assertPublicAssetUrl('https://evil.com/temp/x.webp')).toThrow(
+      UnprocessableEntityException,
+    );
   });
 
   it('拒绝 userinfo 伪造', () => {
-    expect(() => assertPublicAssetUrl('https://cdn.example.com@evil.com/temp/x.webp')).toThrow(UnprocessableEntityException);
+    expect(() => assertPublicAssetUrl('https://cdn.example.com@evil.com/temp/x.webp')).toThrow(
+      UnprocessableEntityException,
+    );
   });
 
   it('拒绝携带 userinfo 的白名单 host', () => {
-    expect(() => assertPublicAssetUrl('https://user:pass@cdn.example.com/temp/x')).toThrow(UnprocessableEntityException);
+    expect(() => assertPublicAssetUrl('https://user:pass@cdn.example.com/temp/x')).toThrow(
+      UnprocessableEntityException,
+    );
   });
 
   it('允许大小写 host', () => {

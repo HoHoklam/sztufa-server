@@ -7,7 +7,6 @@ import { BackupService } from './backup.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { EventEmitter } from 'events';
 
 describe('BackupController Supertest HTTP Guard & Roles Spec', () => {
   let app: INestApplication;
@@ -404,12 +403,6 @@ describe('BackupController scheduled backup single-flight', () => {
     const controller = new BackupController(backupService);
     const previousSecret = process.env.CRON_SECRET;
     process.env.CRON_SECRET = 'cron-test-secret';
-
-    const createRequest = () => {
-      const req = new EventEmitter() as any;
-      req.headers = { authorization: 'Bearer cron-test-secret' };
-      return req;
-    };
 
     try {
       const first = controller.autoBackup();
